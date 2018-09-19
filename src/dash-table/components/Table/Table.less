@@ -39,9 +39,6 @@
 }
 
 .dash-spreadsheet-inner {
-    box-sizing: border-box;
-    border-left: lightgrey 1px solid;
-    border-top: lightgrey 1px solid;
     display: flex;
     flex-direction: column;
 
@@ -103,11 +100,13 @@
         left: 0;
         position: sticky;
         z-index: 400;
+        border-top: lightgrey 1px solid;
     }
 
     .cell-0-1 {
         z-index: 300;
         flex: 0 0 auto;
+        border-top: lightgrey 1px solid;
     }
 
     .cell-1-1 {
