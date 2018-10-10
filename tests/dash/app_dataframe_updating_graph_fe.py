@@ -7,6 +7,8 @@ from textwrap import dedent
 import dash_table
 from index import app
 
+print("Dash Table Version " + dash_table.__version__)
+
 ID_PREFIX = "app_dataframe_updating_graph"
 IDS = {"table": ID_PREFIX, "container": "{}-container".format(ID_PREFIX)}
 df = pd.read_csv("./datasets/gapminder.csv")
