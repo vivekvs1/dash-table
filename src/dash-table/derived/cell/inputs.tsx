@@ -9,7 +9,7 @@ import {
     Datum,
     IVisibleColumn,
     VisibleColumns,
-    ICellFactoryOptions
+    ICellFactoryProps
 } from 'dash-table/components/Table/props';
 import CellInput from 'dash-table/components/CellInput';
 import derivedCellEventHandlerProps from 'dash-table/derived/cell/eventHandlerProps';
@@ -29,7 +29,7 @@ const getter = (
     isFocused: boolean,
     tableId: string,
     dropdowns: any[][],
-    propsFn: () => ICellFactoryOptions
+    propsFn: () => ICellFactoryProps
 ): JSX.Element[][] => mapData(
     (datum, rowIndex) => mapRow(
         (column, columnIndex) => {

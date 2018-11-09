@@ -149,8 +149,8 @@ interface IProps {
     style_cell_conditional?: Cells;
     style_filter_conditional?: BasicFilters;
     style_header_conditional?: Headers;
-
     style_table?: Table;
+    virtualization?: boolean;
 }
 
 interface IDefaultProps {
@@ -193,6 +193,7 @@ interface IDefaultProps {
     style_header_conditional: Headers;
 
     style_table: Table;
+    virtualization: boolean;
 }
 
 interface IDerivedProps {
@@ -218,7 +219,21 @@ export type ControlledTableProps = PropsWithDefaults & {
     virtual_selected_rows: Indices;
 };
 
-export interface ICellFactoryOptions {
+export interface IControlledTableState {
+    forcedResizeOnly: boolean;
+    viewport?: {
+        scrollX: number;
+        scrollY: number;
+        height: number;
+        width: number;
+    };
+    cell?: {
+        width: number[];
+        height: number;
+    };
+}
+
+export interface ICellFactoryProps {
     active_cell: ActiveCell;
     columns: VisibleColumns;
     column_conditional_dropdowns: IConditionalColumnDropdown[];
@@ -246,4 +261,23 @@ export interface ICellFactoryOptions {
     style_header_conditional: Headers;
     style_table: Table;
     viewport: IDerivedData;
+    virtualization: boolean;
+}
+
+export interface ICellFactoryState {
+    viewport?: {
+        scrollX: number;
+        scrollY: number;
+        height: number;
+        width: number;
+    };
+    cell?: {
+        width: number[];
+        height: number;
+    };
+}
+
+export interface ICellFactoryOptions {
+    propsFn: () => ICellFactoryProps;
+    stateFn: () => ICellFactoryState;
 }

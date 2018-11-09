@@ -45,12 +45,14 @@ class App extends Component {
                     }
                 ],
                 style_table: {
+                    max_height: '1400px',
+                    height: '1400px',
                     max_width: '1000px',
                     width: '1000px'
                 },
                 style_data_conditional: [
                     { max_width: 150, min_width: 150, width: 150 },
-                    { if: { column_id: 'rows' }, max_width: 40, min_width: 40, width: 40 },
+                    { if: { column_id: 'rows' }, max_width: 60, min_width: 60, width: 60 },
                     { if: { column_id: 'bbb' }, max_width: 200, min_width: 200, width: 200 },
                     { if: { column_id: 'bbb-readonly' }, max_width: 200, min_width: 200, width: 200 }
                 ],

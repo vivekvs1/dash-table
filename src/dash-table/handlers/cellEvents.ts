@@ -1,12 +1,12 @@
 import * as R from 'ramda';
-import { SelectedCells, ICellFactoryOptions } from 'dash-table/components/Table/props';
+import { SelectedCells, ICellFactoryProps } from 'dash-table/components/Table/props';
 import isActive from 'dash-table/derived/cell/isActive';
 
 function isCellSelected(selectedCells: SelectedCells, idx: number, i: number) {
     return selectedCells && R.contains([idx, i], selectedCells);
 }
 
-export const handleClick = (propsFn: () => ICellFactoryOptions, idx: number, i: number, e: any) => {
+export const handleClick = (propsFn: () => ICellFactoryProps, idx: number, i: number, e: any) => {
     const {
         editable,
         selected_cells,
@@ -26,7 +26,7 @@ export const handleClick = (propsFn: () => ICellFactoryOptions, idx: number, i: 
 
     e.preventDefault();
     const cellLocation: [number, number] = [idx, i];
-    const newProps: Partial<ICellFactoryOptions> = {
+    const newProps: Partial<ICellFactoryProps> = {
         is_focused: false,
         active_cell: cellLocation
     };
@@ -54,7 +54,7 @@ export const handleClick = (propsFn: () => ICellFactoryOptions, idx: number, i: 
     setProps(newProps);
 };
 
-export const handleDoubleClick = (propsFn: () => ICellFactoryOptions, idx: number, i: number, e: any) => {
+export const handleDoubleClick = (propsFn: () => ICellFactoryProps, idx: number, i: number, e: any) => {
     const {
         editable,
         is_focused,
@@ -78,7 +78,7 @@ export const handleDoubleClick = (propsFn: () => ICellFactoryOptions, idx: numbe
     }
 };
 
-export const handleChange = (propsFn: () => ICellFactoryOptions, idx: number, i: number, value: any) => {
+export const handleChange = (propsFn: () => ICellFactoryProps, idx: number, i: number, value: any) => {
     const {
         columns,
         data,
@@ -105,15 +105,15 @@ export const handleChange = (propsFn: () => ICellFactoryOptions, idx: number, i:
 
 };
 
-export const handleOnMouseUp = (propsFn: () => ICellFactoryOptions, idx: number, i: number, e: any) => {
+export const handleOnMouseUp = (propsFn: () => ICellFactoryProps, idx: number, i: number, e: any) => {
     const {
         active_cell,
-        is_focused,
+        is_focused
     } = propsFn();
 
     const active = isActive(active_cell, idx, i);
 
-    if(!is_focused && active) {
+    if (!is_focused && active) {
         e.preventDefault();
         // We do this because mouseMove can change the selection, we don't want
         // to check for all mouse movements, for performance reasons.
@@ -122,6 +122,6 @@ export const handleOnMouseUp = (propsFn: () => ICellFactoryOptions, idx: number,
     }
 };
 
-export const handlePaste = (_propsFn: () => ICellFactoryOptions, _idx: number, _i: number, e: ClipboardEvent) => {
+export const handlePaste = (_propsFn: () => ICellFactoryProps, _idx: number, _i: number, e: ClipboardEvent) => {
     e.preventDefault();
 };

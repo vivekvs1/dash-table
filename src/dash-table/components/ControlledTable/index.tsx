@@ -14,7 +14,7 @@ import { memoizeOne } from 'core/memoizer';
 import lexer from 'core/syntax-tree/lexer';
 
 import TableClipboardHelper from 'dash-table/utils/TableClipboardHelper';
-import { ControlledTableProps } from 'dash-table/components/Table/props';
+import { ControlledTableProps, IControlledTableState } from 'dash-table/components/Table/props';
 import dropdownHelper from 'dash-table/components/dropdownHelper';
 
 import derivedTable from 'dash-table/derived/table';
@@ -25,15 +25,11 @@ import { IStyle } from 'dash-table/derived/style/props';
 
 const sortNumerical = R.sort<number>((a, b) => a - b);
 
-interface IState {
-    forcedResizeOnly: boolean;
-}
-
 const DEFAULT_STYLE = {
     width: '100%'
 };
 
-export default class ControlledTable extends PureComponent<ControlledTableProps, IState> {
+export default class ControlledTable extends PureComponent<ControlledTableProps, IControlledTableState> {
     private readonly stylesheet: Stylesheet;
     private readonly tableFn: () => JSX.Element[][];
     private readonly tableStyle = derivedTableStyle();
@@ -50,7 +46,7 @@ export default class ControlledTable extends PureComponent<ControlledTableProps,
         };
 
         this.stylesheet = new Stylesheet(`#${props.id}`);
-        this.tableFn = derivedTable(() => this.props);
+        this.tableFn = derivedTable(() => this.props, () => this.state);
         this.updateStylesheet();
     }
 
@@ -104,6 +100,22 @@ export default class ControlledTable extends PureComponent<ControlledTableProps,
         this.applyStyle();
         this.handleResize();
         this.handleDropdown();
+
+        // Use this opportunity to update state.cell
+        if (!this.state.cell) {
+            const { r1c1 } = this.refs as { [key: string]: HTMLElement };
+
+            const contentTd = r1c1.querySelector('tr > td:first-of-type');
+
+            if (contentTd) {
+                this.setState({
+                    cell: {
+                        width: [],
+                        height: contentTd.clientHeight
+                    }
+                });
+            }
+        }
     }
 
     handleClickOutside = (event: any) => {
@@ -523,6 +535,25 @@ export default class ControlledTable extends PureComponent<ControlledTableProps,
 
         const { r1c0, r1c1 } = this.refs as { [key: string]: HTMLElement };
 
+        let parent: any = r1c1.parentElement;
+        if (!this.state.viewport ||
+            (
+                this.state.viewport.scrollX !== parent.scrollLeft ||
+                this.state.viewport.scrollY !== parent.scrollTop ||
+                this.state.viewport.height !== parent.clientHeight ||
+                this.state.viewport.width !== parent.clientWidth
+            )
+        ) {
+            this.setState({
+                viewport: {
+                    scrollX: parent.scrollLeft,
+                    scrollY: parent.scrollTop,
+                    height: parent.clientHeight,
+                    width: parent.clientWidth
+                }
+            });
+        }
+
         if (row_deletable) {
             this.stylesheet.setRule(
                 `.dash-spreadsheet-inner td.dash-delete-cell`,
@@ -579,10 +610,29 @@ export default class ControlledTable extends PureComponent<ControlledTableProps,
     }
 
     onScroll = (ev: any) => {
-        const { r0c1 } = this.refs as { [key: string]: HTMLElement };
+        const { r0c1, r1c1 } = this.refs as { [key: string]: HTMLElement };
 
         Logger.trace(`ControlledTable fragment scrolled to (left,top)=(${ev.target.scrollLeft},${ev.target.scrollTop})`);
         r0c1.style.marginLeft = `${-ev.target.scrollLeft}px`;
+
+        let parent: any = r1c1.parentElement;
+        if (!this.state.viewport ||
+            (
+                this.state.viewport.scrollX !== parent.scrollLeft ||
+                this.state.viewport.scrollY !== parent.scrollTop ||
+                this.state.viewport.height !== parent.clientHeight ||
+                this.state.viewport.width !== parent.clientWidth
+            )
+        ) {
+            this.setState({
+                viewport: {
+                    scrollX: parent.scrollLeft,
+                    scrollY: parent.scrollTop,
+                    height: parent.clientHeight,
+                    width: parent.clientWidth
+                }
+            });
+        }
 
         this.handleDropdown();
     }
@@ -594,7 +644,8 @@ export default class ControlledTable extends PureComponent<ControlledTableProps,
             n_fixed_columns,
             n_fixed_rows,
             style_as_list_view,
-            style_table
+            style_table,
+            viewport
         } = this.props;
 
         const classes = [
@@ -631,6 +682,10 @@ export default class ControlledTable extends PureComponent<ControlledTableProps,
 
         const tableStyle = this.calculateTableStyle(style_table);
 
+        const marginTop = this.state.viewport && this.state.cell ?
+            Math.floor(this.state.viewport.scrollY / this.state.cell.height) * this.state.cell.height :
+            0;
+
         return (<div
             id={id}
             onCopy={this.onCopy}
@@ -645,10 +700,11 @@ export default class ControlledTable extends PureComponent<ControlledTableProps,
                         className={`row row-${rowIndex}`}
                         onScroll={this.onScroll}
                     >{row.map((cell, columnIndex) => (<div
+                            style={columnIndex === 1 && rowIndex === 1 ? { height: `${((this.state.cell && this.state.cell.height) || 1) * viewport.data.length}px` } : {}}
                         key={columnIndex}
                         ref={`r${rowIndex}c${columnIndex}`}
                         className={`cell cell-${rowIndex}-${columnIndex} ${fragmentClasses[rowIndex][columnIndex]}`}
-                    >{cell}</div>))
+                        >{rowIndex === 1 ? React.cloneElement(cell as any, { style: { 'margin-top': `${marginTop}px` }}) : cell}</div>))
                         }</div>))}
                 </div>
             </div>
