@@ -43,6 +43,7 @@ export type PaginationMode = 'fe' | 'be' | boolean;
 export type RowSelection = 'single' | 'multi' | false;
 export type SelectedCells = CellCoordinates[];
 export type SetProps = (...args: any[]) => void;
+export type SetState = (state: Partial<IState>) => void;
 export type Sorting = 'fe' | 'be' | boolean;
 export type SortingType = 'multi' | 'single';
 export type VisibleColumns = IVisibleColumn[];
@@ -100,6 +101,25 @@ export interface IPaginationSettings {
     current_page: number;
     page_size: number;
 }
+
+export interface IUserInterfaceCell {
+    height: number;
+}
+
+export interface IUserInterfaceViewport {
+    scrollLeft: number;
+    scrollTop: number;
+    height: number;
+    width: number;
+}
+
+export interface IState {
+    forcedResizeOnly: boolean;
+    uiViewport?: IUserInterfaceViewport;
+    uiCell?: IUserInterfaceCell;
+}
+
+export type StandaloneState = IState & Partial<PropsWithDefaultsAndDerived>;
 
 interface IProps {
     data_previous?: any[];
@@ -208,8 +228,9 @@ interface IDerivedProps {
 export type PropsWithDefaults = IProps & IDefaultProps;
 export type PropsWithDefaultsAndDerived = PropsWithDefaults & IDerivedProps;
 
-export type ControlledTableProps = PropsWithDefaults & {
+export type ControlledTableProps = PropsWithDefaults & IState & {
     setProps: SetProps;
+    setState: SetState;
 
     columns: VisibleColumns;
     paginator: IPaginator;
@@ -217,21 +238,8 @@ export type ControlledTableProps = PropsWithDefaults & {
     viewport_selected_rows: Indices;
     virtual: IDerivedData;
     virtual_selected_rows: Indices;
+    virtualized: IDerivedData;
 };
-
-export interface IControlledTableState {
-    forcedResizeOnly: boolean;
-    viewport?: {
-        scrollX: number;
-        scrollY: number;
-        height: number;
-        width: number;
-    };
-    cell?: {
-        width: number[];
-        height: number;
-    };
-}
 
 export interface ICellFactoryProps {
     active_cell: ActiveCell;
@@ -260,24 +268,9 @@ export interface ICellFactoryProps {
     style_filter_conditional: BasicFilters;
     style_header_conditional: Headers;
     style_table: Table;
+    uiCell?: IUserInterfaceCell;
+    uiViewport?: IUserInterfaceViewport;
     viewport: IDerivedData;
     virtualization: boolean;
-}
-
-export interface ICellFactoryState {
-    viewport?: {
-        scrollX: number;
-        scrollY: number;
-        height: number;
-        width: number;
-    };
-    cell?: {
-        width: number[];
-        height: number;
-    };
-}
-
-export interface ICellFactoryOptions {
-    propsFn: () => ICellFactoryProps;
-    stateFn: () => ICellFactoryState;
+    virtualized: IDerivedData;
 }

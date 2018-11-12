@@ -9,50 +9,59 @@ import derivedPaginator from 'dash-table/derived/paginator';
 import derivedSelectedRows from 'dash-table/derived/selectedRows';
 import derivedViewportData from 'dash-table/derived/data/viewport';
 import derivedVirtualData from 'dash-table/derived/data/virtual';
+import derivedVirtualizedData from 'dash-table/derived/data/virtualized';
 import derivedVisibleColumns from 'dash-table/derived/column/visible';
 
 import {
     ControlledTableProps,
     PropsWithDefaultsAndDerived,
-    SetProps
+    SetProps,
+    IState,
+    StandaloneState
 } from './props';
 
 import 'react-select/dist/react-select.css';
 import './Table.less';
 import './Dropdown.css';
+import { isEqual } from 'core/comparer';
 
 const DERIVED_REGEX = /^derived_/;
 
-export default class Table extends Component<PropsWithDefaultsAndDerived> {
+export default class Table extends Component<PropsWithDefaultsAndDerived, StandaloneState> {
     private controlled: ControlledTableProps;
 
     constructor(props: PropsWithDefaultsAndDerived) {
         super(props);
 
-        this.controlled = this.getControlledProps(this.props);
-        this.updateDerivedProps();
+        this.state = {
+            forcedResizeOnly: false
+        };
     }
 
-    componentWillReceiveProps(nextProps: PropsWithDefaultsAndDerived) {
-        this.controlled = this.getControlledProps(nextProps);
-        this.updateDerivedProps();
-    }
-
-    shouldComponentUpdate(nextProps: any) {
+    shouldComponentUpdate(nextProps: any, nextState: any) {
         const props: any = this.props;
+        const state: any = this.state;
 
-        return R.any(key =>
+        let res = R.any(key =>
             !DERIVED_REGEX.test(key) && props[key] !== nextProps[key],
             R.keysIn(props)
-        );
+        ) || !isEqual(state, nextState, false);
+
+        return res;
     }
 
     render() {
+        this.controlled = this.getControlledProps();
+        this.updateDerivedProps();
+
         return (<ControlledTable {...this.controlled} />);
     }
 
-    private getControlledProps(props: PropsWithDefaultsAndDerived): ControlledTableProps {
-        const { setProps } = this;
+    private getControlledProps(): ControlledTableProps {
+        const {
+            controlledSetProps: setProps,
+            controlledSetState: setState
+        } = this;
 
         const {
             columns,
@@ -65,7 +74,12 @@ export default class Table extends Component<PropsWithDefaultsAndDerived> {
             sorting,
             sorting_settings,
             sorting_treat_empty_string_as_none
-        } = props;
+        } = this.props;
+
+        const {
+            uiCell,
+            uiViewport
+        } = this.state;
 
         const virtual = this.virtual(
             data,
@@ -81,6 +95,12 @@ export default class Table extends Component<PropsWithDefaultsAndDerived> {
             pagination_settings,
             virtual.data,
             virtual.indices
+        );
+
+        const virtualized = this.virtualized(
+            uiCell,
+            uiViewport,
+            viewport
         );
 
         const virtual_selected_rows = this.virtualSelectedRows(
@@ -103,15 +123,18 @@ export default class Table extends Component<PropsWithDefaultsAndDerived> {
         const visibleColumns = this.visibleColumns(columns);
 
         return R.mergeAll([
-            props,
+            this.props,
+            this.state,
             {
                 columns: visibleColumns,
                 paginator,
                 setProps,
+                setState,
                 viewport,
                 viewport_selected_rows,
                 virtual,
-                virtual_selected_rows
+                virtual_selected_rows,
+                virtualized
             }
         ]);
     }
@@ -145,7 +168,7 @@ export default class Table extends Component<PropsWithDefaultsAndDerived> {
             (!invalidatedPagination.cached && !invalidatedPagination.first && pagination_mode === 'be') ||
             (!invalidatedSort.cached && !invalidatedSort.first && sorting === 'be');
 
-        const { setProps } = this;
+        const { controlledSetProps } = this;
         let newProps: Partial<PropsWithDefaultsAndDerived> = {};
 
         if (!virtualCached) {
@@ -176,11 +199,15 @@ export default class Table extends Component<PropsWithDefaultsAndDerived> {
             return;
         }
 
-        setTimeout(() => setProps(newProps), 0);
+        setTimeout(() => controlledSetProps(newProps), 0);
     }
 
-    private get setProps() {
+    private get controlledSetProps() {
         return this.__setProps(this.props.setProps);
+    }
+
+    private get controlledSetState() {
+        return this.__setState();
     }
 
     private readonly __setProps = memoizeOne((setProps?: SetProps) => {
@@ -196,11 +223,14 @@ export default class Table extends Component<PropsWithDefaultsAndDerived> {
         } : (newProps: Partial<PropsWithDefaultsAndDerived>) => this.setState(newProps);
     });
 
+    private readonly __setState = memoizeOne(() => (state: Partial<IState>) => this.setState(state as IState));
+
     private readonly paginator = derivedPaginator();
     private readonly viewport = derivedViewportData();
     private readonly viewportSelectedRows = derivedSelectedRows();
     private readonly virtual = derivedVirtualData();
     private readonly virtualSelectedRows = derivedSelectedRows();
+    private readonly virtualized = derivedVirtualizedData();
     private readonly visibleColumns = derivedVisibleColumns();
 
     private readonly filterCache = memoizeOneWithFlag(filter => filter);

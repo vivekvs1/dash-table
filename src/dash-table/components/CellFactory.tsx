@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ICellFactoryOptions } from 'dash-table/components/Table/props';
+import { ICellFactoryProps } from 'dash-table/components/Table/props';
 import derivedCellWrappers from 'dash-table/derived/cell/wrappers';
 import derivedCellInputs from 'dash-table/derived/cell/inputs';
 import derivedCellOperations from 'dash-table/derived/cell/operations';
@@ -10,7 +10,6 @@ import { derivedRelevantCellStyles } from 'dash-table/derived/style';
 
 import { matrixMap3 } from 'core/math/matrixZipMap';
 import { arrayMap } from 'core/math/arrayZipMap';
-// import Logger from 'core/Logger';
 
 export default class CellFactory {
     private readonly cellInputs = derivedCellInputs();
@@ -18,17 +17,13 @@ export default class CellFactory {
     private readonly cellDropdowns = derivedDropdowns();
 
     private get props() {
-        return this.options.propsFn();
-    }
-
-    private get state() {
-        return this.options.stateFn();
+        return this.propsFn();
     }
 
     constructor(
-        private readonly options: ICellFactoryOptions,
+        private readonly propsFn: () => ICellFactoryProps,
         private readonly cellStyles = derivedCellStyles(),
-        private readonly cellWrappers = derivedCellWrappers(options.propsFn().id),
+        private readonly cellWrappers = derivedCellWrappers(propsFn().id),
         private readonly relevantStyles = derivedRelevantCellStyles()
     ) { }
 
@@ -52,30 +47,8 @@ export default class CellFactory {
             style_cell_conditional,
             style_data,
             style_data_conditional,
-            viewport,
-            // virtualization
+            virtualized
         } = this.props;
-
-        const {
-            viewport: uiViewport,
-            cell
-        } = this.state;
-
-        const virtualized = (uiViewport && cell) ?
-            {
-                data: viewport.data.slice(
-                    Math.floor(uiViewport.scrollY / cell.height),
-                    Math.ceil((Math.max(uiViewport.height, 376) + uiViewport.scrollY) / cell.height)
-                ),
-                indices: viewport.indices.slice(
-                    Math.floor(uiViewport.scrollY / cell.height),
-                    Math.ceil((Math.max(uiViewport.height, 376) + uiViewport.scrollY) / cell.height)
-                )
-            } :
-            {
-                data: viewport.data.slice(0, 1),
-                indices: viewport.indices.slice(0, 1)
-            };
 
         const operations = this.cellOperations(
             active_cell,
@@ -125,7 +98,7 @@ export default class CellFactory {
             !!is_focused,
             id,
             dropdowns,
-            this.options.propsFn
+            this.propsFn
         );
 
         const cells = matrixMap3(

@@ -1,7 +1,7 @@
 import CellFactory from 'dash-table/components/CellFactory';
 import FilterFactory from 'dash-table/components/FilterFactory';
 import HeaderFactory from 'dash-table/components/HeaderFactory';
-import { ControlledTableProps, SetProps, IControlledTableState } from 'dash-table/components/Table/props';
+import { ControlledTableProps, SetProps } from 'dash-table/components/Table/props';
 
 const handleSetFilter = (setProps: SetProps, filtering_settings: string) => setProps({ filtering_settings });
 
@@ -58,8 +58,8 @@ function getter(
     return cells;
 }
 
-export default (propsFn: () => ControlledTableProps, stateFn: () => IControlledTableState): (() => JSX.Element[][]) => {
-    const cellFactory = new CellFactory({ propsFn, stateFn });
+export default (propsFn: () => ControlledTableProps): (() => JSX.Element[][]) => {
+    const cellFactory = new CellFactory(propsFn);
     const filterFactory = new FilterFactory(() => filterPropsFn(propsFn));
     const headerFactory = new HeaderFactory(propsFn);
 
