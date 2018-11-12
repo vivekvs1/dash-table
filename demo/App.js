@@ -56,6 +56,8 @@ class App extends Component {
                     { if: { column_id: 'bbb' }, max_width: 200, min_width: 200, width: 200 },
                     { if: { column_id: 'bbb-readonly' }, max_width: 200, min_width: 200, width: 200 }
                 ],
+                virtualization: true,
+                // pagination_mode: 'fe'
             }
         };
 

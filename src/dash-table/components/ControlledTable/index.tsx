@@ -10,6 +10,7 @@ import {
 import { selectionCycle } from 'dash-table/utils/navigation';
 
 import Logger from 'core/Logger';
+import { arrayMap3 } from 'core/math/arrayZipMap';
 import { memoizeOne } from 'core/memoizer';
 import lexer from 'core/syntax-tree/lexer';
 
@@ -19,6 +20,7 @@ import dropdownHelper from 'dash-table/components/dropdownHelper';
 
 import derivedTable from 'dash-table/derived/table';
 import derivedTableFragments from 'dash-table/derived/table/fragments';
+import derivedTableFragmentStyles from 'dash-table/derived/table/fragmentStyles';
 import isEditable from 'dash-table/derived/cell/isEditable';
 import { derivedTableStyle } from 'dash-table/derived/style';
 import { IStyle } from 'dash-table/derived/style/props';
@@ -655,7 +657,8 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
             style_table,
             uiCell,
             uiViewport,
-            viewport
+            viewport,
+            virtualization
         } = this.props;
 
         const classes = [
@@ -691,10 +694,7 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
         const grid = derivedTableFragments(n_fixed_columns, n_fixed_rows, rawTable);
 
         const tableStyle = this.calculateTableStyle(style_table);
-
-        const marginTop = uiViewport && uiCell ?
-            Math.floor(uiViewport.scrollTop / uiCell.height) * uiCell.height :
-            0;
+        const gridStyle = derivedTableFragmentStyles(virtualization, uiCell, uiViewport, viewport);
 
         return (<div
             id={id}
@@ -709,13 +709,16 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
                         ref={`r${rowIndex}`}
                         className={`row row-${rowIndex}`}
                         onScroll={this.onScroll}
-                    >{row.map((cell, columnIndex) => (<div
-                            style={columnIndex === 1 && rowIndex === 1 ? { height: `${((uiCell && uiCell.height) || 1) * viewport.data.length}px` } : {}}
-                        key={columnIndex}
-                        ref={`r${rowIndex}c${columnIndex}`}
-                        className={`cell cell-${rowIndex}-${columnIndex} ${fragmentClasses[rowIndex][columnIndex]}`}
-                        >{rowIndex === 1 ? React.cloneElement(cell as any, { style: { 'marginTop': `${marginTop}px` }}) : cell}</div>))
-                        }</div>))}
+                    >
+                        {arrayMap3(row, gridStyle[rowIndex], fragmentClasses[rowIndex], (g, s, c, columnIndex) => (<div
+                            style={s.fragment}
+                            key={columnIndex}
+                            ref={`r${rowIndex}c${columnIndex}`}
+                            className={`cell cell-${rowIndex}-${columnIndex} ${c}`}
+                        >
+                            {React.cloneElement(g as any, { style: s.cell })}
+                        </div>))}
+                    </div>))}
                 </div>
             </div>
             {!this.displayPagination ? null : (

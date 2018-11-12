@@ -73,7 +73,8 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
             selected_rows,
             sorting,
             sorting_settings,
-            sorting_treat_empty_string_as_none
+            sorting_treat_empty_string_as_none,
+            virtualization
         } = this.props;
 
         const {
@@ -98,6 +99,7 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
         );
 
         const virtualized = this.virtualized(
+            virtualization,
             uiCell,
             uiViewport,
             viewport
