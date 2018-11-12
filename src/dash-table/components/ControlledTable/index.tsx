@@ -64,6 +64,33 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
         }, css);
     }
 
+    private updateUiViewport() {
+        const {
+            setState,
+            uiViewport
+        } = this.props;
+
+        const { r1c1 } = this.refs as { [key: string]: HTMLElement };
+        let parent: any = r1c1.parentElement;
+
+        if (uiViewport &&
+            uiViewport.scrollLeft === parent.scrollLeft &&
+            uiViewport.scrollTop === parent.scrollTop &&
+            uiViewport.height === parent.clientHeight &&
+            uiViewport.width === parent.clientWidth) {
+            return;
+        }
+
+        setState({
+            uiViewport: {
+                scrollLeft: parent.scrollLeft,
+                scrollTop: parent.scrollTop,
+                height: parent.clientHeight,
+                width: parent.clientWidth
+            }
+        });
+    }
+
     componentDidMount() {
         if (
             this.props.selected_cells.length &&
@@ -104,20 +131,22 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
             uiCell
         } = this.props;
 
-        // Use this opportunity to update state.cell
-        if (!uiCell) {
-            const { r1c1 } = this.refs as { [key: string]: HTMLElement };
-
-            const contentTd = r1c1.querySelector('tr > td:first-of-type');
-
-            if (contentTd) {
-                setState({
-                    uiCell: {
-                        height: contentTd.clientHeight
-                    }
-                });
-            }
+        if (uiCell) {
+            return;
         }
+
+        const { r1c1 } = this.refs as { [key: string]: HTMLElement };
+        const contentTd = r1c1.querySelector('tr > td:first-of-type');
+
+        if (!contentTd) {
+            return;
+        }
+
+        setState({
+            uiCell: {
+                height: contentTd.clientHeight
+            }
+        });
     }
 
     handleClickOutside = (event: any) => {
@@ -537,29 +566,12 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
             n_fixed_columns,
             n_fixed_rows,
             row_deletable,
-            row_selectable,
-            setState,
-            uiViewport
+            row_selectable
         } = this.props;
 
         const { r1c0, r1c1 } = this.refs as { [key: string]: HTMLElement };
 
-        let parent: any = r1c1.parentElement;
-        if (!uiViewport || (
-            uiViewport.scrollLeft !== parent.scrollLeft ||
-            uiViewport.scrollTop !== parent.scrollTop ||
-            uiViewport.height !== parent.clientHeight ||
-            uiViewport.width !== parent.clientWidth
-        )) {
-            setState({
-                uiViewport: {
-                    scrollLeft: parent.scrollLeft,
-                    scrollTop: parent.scrollTop,
-                    height: parent.clientHeight,
-                    width: parent.clientWidth
-                }
-            });
-        }
+        this.updateUiViewport();
 
         if (row_deletable) {
             this.stylesheet.setRule(
@@ -617,33 +629,12 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
     }
 
     onScroll = (ev: any) => {
-        const {
-            setState,
-            uiViewport
-        } = this.props;
-
-        const { r0c1, r1c1 } = this.refs as { [key: string]: HTMLElement };
+        const { r0c1 } = this.refs as { [key: string]: HTMLElement };
 
         Logger.trace(`ControlledTable fragment scrolled to (left,top)=(${ev.target.scrollLeft},${ev.target.scrollTop})`);
         r0c1.style.marginLeft = `${-ev.target.scrollLeft}px`;
 
-        let parent: any = r1c1.parentElement;
-        if (!uiViewport || (
-            uiViewport.scrollLeft !== parent.scrollLeft ||
-            uiViewport.scrollTop !== parent.scrollTop ||
-            uiViewport.height !== parent.clientHeight ||
-            uiViewport.width !== parent.clientWidth
-        )) {
-            setState({
-                uiViewport: {
-                    scrollLeft: parent.scrollLeft,
-                    scrollTop: parent.scrollTop,
-                    height: parent.clientHeight,
-                    width: parent.clientWidth
-                }
-            });
-        }
-
+        this.updateUiViewport();
         this.handleDropdown();
     }
 
