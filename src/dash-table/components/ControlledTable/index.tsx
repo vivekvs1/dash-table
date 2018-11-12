@@ -716,7 +716,7 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
                             ref={`r${rowIndex}c${columnIndex}`}
                             className={`cell cell-${rowIndex}-${columnIndex} ${c}`}
                         >
-                            {React.cloneElement(g as any, { style: s.cell })}
+                            {g ? React.cloneElement(g, { style: s.cell }) : g}
                         </div>))}
                     </div>))}
                 </div>
