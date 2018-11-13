@@ -84,11 +84,11 @@ export const handleChange = (propsFn: () => ICellFactoryProps, idx: number, i: n
         data,
         editable,
         setProps,
-        viewport
+        virtualized
     } = propsFn();
 
     const c = columns[i];
-    const realIdx = viewport.indices[idx];
+    const realIdx = virtualized.indices[idx];
 
     if (!editable) {
         return;

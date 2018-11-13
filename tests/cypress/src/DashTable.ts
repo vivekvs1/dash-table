@@ -18,4 +18,10 @@ export default class DashTable {
     static getSelectedCells() {
         return cy.get(`#table tbody td.cell--selected`);
     }
+
+    static toggleScroll(toggled: boolean) {
+        cy.get('.row-1').then($el => {
+            $el[0].style.overflow = toggled ? '' : 'unset';
+        });
+    }
 }
