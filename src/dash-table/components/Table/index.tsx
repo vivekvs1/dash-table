@@ -17,13 +17,17 @@ import {
     PropsWithDefaultsAndDerived,
     SetProps,
     IState,
-    StandaloneState
+    StandaloneState,
+    PropsWithDefaults
 } from './props';
 
 import 'react-select/dist/react-select.css';
 import './Table.less';
 import './Dropdown.css';
 import { isEqual } from 'core/comparer';
+/*#if DEV*/
+import Logger from 'core/Logger';
+/*#endif*/
 
 const DERIVED_REGEX = /^derived_/;
 
@@ -74,13 +78,10 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
             sorting,
             sorting_settings,
             sorting_treat_empty_string_as_none,
-            virtualization
-        } = this.props;
-
-        const {
             uiCell,
-            uiViewport
-        } = this.state;
+            uiViewport,
+            virtualization
+        } = R.merge(this.props, this.state) as (PropsWithDefaults & StandaloneState);
 
         const virtual = this.virtual(
             data,
@@ -214,6 +215,14 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
 
     private readonly __setProps = memoizeOne((setProps?: SetProps) => {
         return setProps ? (newProps: any) => {
+            /*#if DEV*/
+            const props: any = this.props;
+            R.forEach(
+                key => props[key] === newProps[key] && Logger.fatal(`Updated prop ${key} wsas mutated`),
+                R.keysIn(newProps)
+            );
+            /*#endif*/
+
             if (R.has('data', newProps)) {
                 const { data } = this.props;
 
@@ -222,7 +231,17 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
             }
 
             setProps(newProps);
-        } : (newProps: Partial<PropsWithDefaultsAndDerived>) => this.setState(newProps);
+        } : (newProps: Partial<PropsWithDefaultsAndDerived>) => {
+            /*#if DEV*/
+            const props: any = this.state;
+            R.forEach(
+                key => props[key] === (newProps as any)[key] && Logger.fatal(`Updated prop ${key} wsas mutated`),
+                R.keysIn(newProps)
+            );
+            /*#endif*/
+
+            this.setState(newProps);
+        };
     });
 
     private readonly __setState = memoizeOne(() => (state: Partial<IState>) => this.setState(state as IState));

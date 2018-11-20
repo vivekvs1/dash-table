@@ -32,7 +32,6 @@ class App extends Component {
         return (<DataTable
             setProps={this.setProps}
             {...this.state.tableProps}
-            {...{ filtering: 'fe' }}
         />);
     }
 }

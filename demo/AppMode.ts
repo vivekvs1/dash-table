@@ -63,7 +63,7 @@ function getDefaultState() {
 }
 
 function getVirtualizedState() {
-    const mock = generateMockData(5000);
+    const mock = generateMockData(25000);
 
     return {
         filter: '',
@@ -71,7 +71,7 @@ function getVirtualizedState() {
             data: mock.data,
             editable: true,
             sorting: true,
-            n_fixed_rows: 4,
+            n_fixed_rows: 3,
             n_fixed_columns: 2,
             merge_duplicate_headers: false,
             row_deletable: true,
