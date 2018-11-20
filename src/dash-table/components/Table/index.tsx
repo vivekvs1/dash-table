@@ -79,6 +79,7 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
             sorting_settings,
             sorting_treat_empty_string_as_none,
             uiCell,
+            uiHeaders,
             uiViewport,
             virtualization
         } = R.merge(this.props, this.state) as (PropsWithDefaults & StandaloneState);
@@ -102,6 +103,7 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
         const virtualized = this.virtualized(
             virtualization,
             uiCell,
+            uiHeaders,
             uiViewport,
             viewport
         );

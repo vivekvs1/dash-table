@@ -137,6 +137,7 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
 
         const { r1c1 } = this.refs as { [key: string]: HTMLElement };
         const contentTd = r1c1.querySelector('tr > td:first-of-type');
+        const contentThs = r1c1.querySelectorAll('tr th:first-of-type');
 
         if (!contentTd) {
             return;
@@ -145,7 +146,8 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
         setState({
             uiCell: {
                 height: contentTd.clientHeight
-            }
+            },
+            uiHeaders: R.map((th: Element) => ({ height: th.clientHeight }), Array.from(contentThs))
         });
     }
 
@@ -647,6 +649,7 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
             style_as_list_view,
             style_table,
             uiCell,
+            uiHeaders,
             uiViewport,
             viewport,
             virtualization
@@ -685,7 +688,13 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
         const grid = derivedTableFragments(n_fixed_columns, n_fixed_rows, rawTable);
 
         const tableStyle = this.calculateTableStyle(style_table);
-        const gridStyle = derivedTableFragmentStyles(virtualization, uiCell, uiViewport, viewport);
+        const gridStyle = derivedTableFragmentStyles(
+            virtualization,
+            uiCell,
+            uiHeaders,
+            uiViewport,
+            viewport
+        );
 
         return (<div
             id={id}

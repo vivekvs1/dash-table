@@ -6,6 +6,7 @@ import { generateMockData, IDataMock } from './data';
 
 export enum AppMode {
     Default = 'default',
+    FixedVirtualized = 'fixed,virtualized',
     Virtualized = 'virtualized'
 }
 
@@ -71,6 +72,28 @@ function getVirtualizedState() {
             data: mock.data,
             editable: true,
             sorting: true,
+            merge_duplicate_headers: false,
+            row_deletable: true,
+            row_selectable: 'single',
+            content_style: 'fit',
+            virtualization: true,
+            css: [{
+                selector: '.row-1',
+                rule: 'height: 600px; max-height: 600px; overflow: scroll;'
+            }]
+        })
+    };
+}
+
+function getFixedVirtualizedState() {
+    const mock = generateMockData(25000);
+
+    return {
+        filter: '',
+        tableProps: R.merge(getBaseTableProps(mock), {
+            data: mock.data,
+            editable: true,
+            sorting: true,
             n_fixed_rows: 3,
             n_fixed_columns: 2,
             merge_duplicate_headers: false,
@@ -86,6 +109,8 @@ function getState() {
     const mode = Environment.searchParams.get('mode');
 
     switch (mode) {
+        case AppMode.FixedVirtualized:
+            return getFixedVirtualizedState();
         case AppMode.Virtualized:
             return getVirtualizedState();
         case AppMode.Default:

@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import { CSSProperties } from 'react';
 
 import {
@@ -9,6 +10,7 @@ import {
 export default (
     virtualization: boolean,
     uiCell: IUserInterfaceCell | undefined,
+    uiHeaders: IUserInterfaceCell[] | undefined,
     uiViewport: IUserInterfaceViewport | undefined,
     viewport: IDerivedData
 ): { fragment?: CSSProperties, cell?: CSSProperties}[][] => {
@@ -19,12 +21,14 @@ export default (
         ];
     }
 
+    const headersHeight = R.sum(R.map(h => h.height, uiHeaders || []));
+
     const marginTop = virtualization && uiViewport && uiCell ?
         Math.floor(uiViewport.scrollTop / uiCell.height) * uiCell.height :
         0;
 
     const cell = {
-        marginTop: `${marginTop}px`
+        marginTop: `${Math.max(marginTop - headersHeight, 0)}px`
     };
 
     const fragment = {

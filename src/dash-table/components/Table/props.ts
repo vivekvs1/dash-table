@@ -117,6 +117,7 @@ export interface IState {
     forcedResizeOnly: boolean;
     uiViewport?: IUserInterfaceViewport;
     uiCell?: IUserInterfaceCell;
+    uiHeaders?: IUserInterfaceCell[];
 }
 
 export type StandaloneState = IState & Partial<PropsWithDefaultsAndDerived>;
