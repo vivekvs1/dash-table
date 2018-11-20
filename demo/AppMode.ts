@@ -64,7 +64,7 @@ function getDefaultState() {
 }
 
 function getVirtualizedState() {
-    const mock = generateMockData(25000);
+    const mock = generateMockData(5000);
 
     return {
         filter: '',
@@ -86,7 +86,7 @@ function getVirtualizedState() {
 }
 
 function getFixedVirtualizedState() {
-    const mock = generateMockData(25000);
+    const mock = generateMockData(5000);
 
     return {
         filter: '',
