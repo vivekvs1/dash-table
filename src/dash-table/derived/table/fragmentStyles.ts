@@ -4,7 +4,8 @@ import { CSSProperties } from 'react';
 import {
     IUserInterfaceCell,
     IUserInterfaceViewport,
-    IDerivedData
+    IDerivedData,
+    IViewportPadding
 } from 'dash-table/components/Table/props';
 
 export default (
@@ -12,7 +13,8 @@ export default (
     uiCell: IUserInterfaceCell | undefined,
     uiHeaders: IUserInterfaceCell[] | undefined,
     uiViewport: IUserInterfaceViewport | undefined,
-    viewport: IDerivedData
+    viewport: IDerivedData,
+    rowPadding: IViewportPadding
 ): { fragment?: CSSProperties, cell?: CSSProperties}[][] => {
     if (!virtualization || !uiCell || !uiViewport) {
         return [
@@ -24,7 +26,7 @@ export default (
     const headersHeight = R.sum(R.map(h => h.height, uiHeaders || []));
 
     const marginTop = virtualization && uiViewport && uiCell ?
-        Math.floor(uiViewport.scrollTop / uiCell.height) * uiCell.height :
+        (Math.floor(uiViewport.scrollTop / uiCell.height) - rowPadding.before) * uiCell.height :
         0;
 
     const cell = {

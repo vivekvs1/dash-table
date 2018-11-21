@@ -30,8 +30,16 @@ export interface IViewportOffset {
     columns: number;
 }
 
+export interface IViewportPadding {
+    before: number;
+    after: number;
+}
+
 export interface IVirtualizedDerivedData extends IDerivedData {
     offset: IViewportOffset;
+    padding: {
+        rows: IViewportPadding;
+    };
 }
 
 export enum ContentStyle {

@@ -652,6 +652,7 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
             uiHeaders,
             uiViewport,
             viewport,
+            virtualized,
             virtualization
         } = this.props;
 
@@ -693,7 +694,8 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
             uiCell,
             uiHeaders,
             uiViewport,
-            viewport
+            viewport,
+            virtualized.padding.rows
         );
 
         return (<div
