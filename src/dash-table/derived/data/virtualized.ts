@@ -4,7 +4,8 @@ import { memoizeOneFactory } from 'core/memoizer';
 import {
     IDerivedData,
     IUserInterfaceViewport,
-    IUserInterfaceCell
+    IUserInterfaceCell,
+    IVirtualizedDerivedData
 } from 'dash-table/components/Table/props';
 
 const getter = (
@@ -13,15 +14,25 @@ const getter = (
     uiHeaders: IUserInterfaceCell[] | undefined,
     uiViewport: IUserInterfaceViewport | undefined,
     viewport: IDerivedData
-): IDerivedData => {
+): IVirtualizedDerivedData => {
     if (!virtualization) {
-        return viewport;
+        return {
+            ...viewport,
+            offset: {
+                rows: 0,
+                columns: 0
+            }
+        };
     }
 
     if (!uiViewport || !uiCell) {
         return {
             data: viewport.data.slice(0, 1),
-            indices: viewport.indices.slice(0, 1)
+            indices: viewport.indices.slice(0, 1),
+            offset: {
+                rows: 0,
+                columns: 0
+            }
         };
     }
 
@@ -34,7 +45,11 @@ const getter = (
 
     return {
         data: viewport.data.slice(start, end),
-        indices: viewport.indices.slice(start, end)
+        indices: viewport.indices.slice(start, end),
+        offset: {
+            rows: start,
+            columns: 0
+        }
     };
 };
 

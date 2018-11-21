@@ -10,7 +10,8 @@ export const handleClick = (propsFn: () => ICellFactoryProps, idx: number, i: nu
     const {
         editable,
         selected_cells,
-        setProps
+        setProps,
+        virtualized
     } = propsFn();
 
     if (!editable) {
@@ -25,7 +26,11 @@ export const handleClick = (propsFn: () => ICellFactoryProps, idx: number, i: nu
     }
 
     e.preventDefault();
-    const cellLocation: [number, number] = [idx, i];
+    const cellLocation: [number, number] = [
+        idx + virtualized.offset.rows,
+        i + virtualized.offset.columns
+    ];
+
     const newProps: Partial<ICellFactoryProps> = {
         is_focused: false,
         active_cell: cellLocation
@@ -58,14 +63,18 @@ export const handleDoubleClick = (propsFn: () => ICellFactoryProps, idx: number,
     const {
         editable,
         is_focused,
-        setProps
+        setProps,
+        virtualized
     } = propsFn();
 
     if (!editable) {
         return;
     }
 
-    const cellLocation: [number, number] = [idx, i];
+    const cellLocation: [number, number] = [
+        idx + virtualized.offset.rows,
+        i + virtualized.offset.columns
+    ];
 
     if (!is_focused) {
         e.preventDefault();

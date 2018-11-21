@@ -25,6 +25,15 @@ export interface IDerivedData {
     indices: Indices;
 }
 
+export interface IViewportOffset {
+    rows: number;
+    columns: number;
+}
+
+export interface IVirtualizedDerivedData extends IDerivedData {
+    offset: IViewportOffset;
+}
+
 export enum ContentStyle {
     Fit = 'fit',
     Grow = 'grow'
@@ -239,7 +248,7 @@ export type ControlledTableProps = PropsWithDefaults & IState & {
     viewport_selected_rows: Indices;
     virtual: IDerivedData;
     virtual_selected_rows: Indices;
-    virtualized: IDerivedData;
+    virtualized: IVirtualizedDerivedData;
 };
 
 export interface ICellFactoryProps {
@@ -273,5 +282,5 @@ export interface ICellFactoryProps {
     uiViewport?: IUserInterfaceViewport;
     viewport: IDerivedData;
     virtualization: boolean;
-    virtualized: IDerivedData;
+    virtualized: IVirtualizedDerivedData;
 }

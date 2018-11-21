@@ -65,6 +65,7 @@ export default class CellFactory {
             active_cell,
             columns,
             virtualized.data,
+            virtualized.offset,
             selected_cells
         );
 

@@ -31,7 +31,6 @@ The version in the package didn't get updated.
 ### Fixed
 The remote URL path for the bundle was incorrect.
 
-
 ## [3.1.0] - 2018-11-02
 - 3.1.0 (Alpha) Release of the Dash Table
 
