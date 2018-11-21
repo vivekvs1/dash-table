@@ -2,9 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.1.7-rc1] - 2018-11-20
-### Added
-- Virtualization [#234](https://github.com/plotly/dash-table/issues/234)
+## [3.1.8] - 2018-11-21
+### Fixed
+- Visual offset with vertical scroll [#216](https://github.com/plotly/dash-table/issues/216)
+
+## [3.1.7] - 2018-11-19
+### Fixed
+- Visual offset with vertical scroll [#216](https://github.com/plotly/dash-table/issues/216)
 
 ## [3.1.6] - 2018-11-15
 ### Changed

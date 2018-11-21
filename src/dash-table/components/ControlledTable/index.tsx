@@ -646,6 +646,7 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
             content_style,
             n_fixed_columns,
             n_fixed_rows,
+            scrollbarWidth,
             style_as_list_view,
             style_table,
             uiCell,
@@ -700,7 +701,8 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
             uiHeaders,
             uiViewport,
             viewport,
-            virtualized.padding.rows
+            virtualized.padding.rows,
+            scrollbarWidth
         );
 
         return (<div

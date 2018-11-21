@@ -38,7 +38,8 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
         super(props);
 
         this.state = {
-            forcedResizeOnly: false
+            forcedResizeOnly: false,
+            scrollbarWidth: 0
         };
     }
 

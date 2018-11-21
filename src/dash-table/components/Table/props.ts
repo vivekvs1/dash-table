@@ -132,6 +132,7 @@ export interface IUserInterfaceViewport {
 
 export interface IState {
     forcedResizeOnly: boolean;
+    scrollbarWidth: number;
     uiViewport?: IUserInterfaceViewport;
     uiCell?: IUserInterfaceCell;
     uiHeaders?: IUserInterfaceCell[];

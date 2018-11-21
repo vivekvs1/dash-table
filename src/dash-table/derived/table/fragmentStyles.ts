@@ -14,7 +14,8 @@ export default (
     uiHeaders: IUserInterfaceCell[] | undefined,
     uiViewport: IUserInterfaceViewport | undefined,
     viewport: IDerivedData,
-    rowPadding: IViewportPadding
+    rowPadding: IViewportPadding,
+    scrollbarWidth: number
 ): { fragment?: CSSProperties, cell?: CSSProperties}[][] => {
     if (!virtualization || !uiCell || !uiViewport) {
         return [
@@ -38,7 +39,7 @@ export default (
     };
 
     return [
-        [{}, {}],
+        [{}, { fragment: { marginRight: scrollbarWidth } }],
         [{ cell }, { cell, fragment }]
     ];
 };
