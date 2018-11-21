@@ -39,9 +39,10 @@ const getter = (
     const headersHeight = R.sum(R.map(h => h.height, uiHeaders || []));
 
     const scrollTop = Math.max(uiViewport.scrollTop - headersHeight, 0);
+    const headersVisible = Math.max(headersHeight - uiViewport.scrollTop, 0);
 
     let start = Math.floor(scrollTop / uiCell.height);
-    let end = Math.ceil((uiViewport.height + scrollTop) / uiCell.height);
+    let end = Math.ceil(((uiViewport.height - headersVisible) + scrollTop) / uiCell.height);
 
     const before = Math.min(start, 1);
     const after = Math.min(viewport.data.length - end, 1);

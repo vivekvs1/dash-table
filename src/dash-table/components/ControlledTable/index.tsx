@@ -686,7 +686,12 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
         ];
 
         const rawTable = this.tableFn();
-        const grid = derivedTableFragments(n_fixed_columns, n_fixed_rows, rawTable);
+        const grid = derivedTableFragments(
+            n_fixed_columns,
+            n_fixed_rows,
+            rawTable,
+            virtualized.offset.rows
+        );
 
         const tableStyle = this.calculateTableStyle(style_table);
         const gridStyle = derivedTableFragmentStyles(
