@@ -9,7 +9,8 @@ import {
     Datum,
     IVisibleColumn,
     VisibleColumns,
-    ICellFactoryProps
+    ICellFactoryProps,
+    IViewportOffset
 } from 'dash-table/components/Table/props';
 import CellInput from 'dash-table/components/CellInput';
 import derivedCellEventHandlerProps from 'dash-table/derived/cell/eventHandlerProps';
@@ -25,6 +26,7 @@ const getter = (
     activeCell: ActiveCell,
     columns: VisibleColumns,
     data: Data,
+    offset: IViewportOffset,
     editable: boolean,
     isFocused: boolean,
     tableId: string,
@@ -33,7 +35,7 @@ const getter = (
 ): JSX.Element[][] => mapData(
     (datum, rowIndex) => mapRow(
         (column, columnIndex) => {
-            const active = isActiveCell(activeCell, rowIndex, columnIndex);
+            const active = isActiveCell(activeCell, rowIndex + offset.rows, columnIndex + offset.columns);
 
             const dropdown = dropdowns[rowIndex][columnIndex];
             const handlers = cellEventHandlerProps(propsFn)(rowIndex, columnIndex);

@@ -79,7 +79,8 @@ export default class CellFactory {
         const wrapperStyles = this.cellStyles(
             columns,
             relevantStyles,
-            virtualized.data
+            virtualized.data,
+            virtualized.offset
         );
 
         const dropdowns = this.cellDropdowns(id)(
@@ -95,6 +96,7 @@ export default class CellFactory {
             active_cell,
             columns,
             virtualized.data,
+            virtualized.offset,
             editable,
             !!is_focused,
             id,
