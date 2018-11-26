@@ -6,6 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Virtualization [#234](https://github.com/plotly/dash-table/issues/234)
 
+### Changed
+- Update dependencies
+
 ## [3.1.7] - 2018-11-19
 ### Fixed
 - Visual offset with vertical scroll [#216](https://github.com/plotly/dash-table/issues/216)
