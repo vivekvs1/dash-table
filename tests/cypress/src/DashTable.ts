@@ -15,6 +15,10 @@ export default class DashTable {
         return cy.get(`#table tbody tr td.dash-select-cell`).eq(row);
     }
 
+    static getActiveCell() {
+        return cy.get(`#table tbody td.focused`);
+    }
+
     static getSelectedCells() {
         return cy.get(`#table tbody td.cell--selected`);
     }
