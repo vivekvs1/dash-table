@@ -24,22 +24,16 @@ export default (
         ];
     }
 
+    const fullHeight = uiCell.height * viewport.data.length;
+    const virtualizedHeight = (Math.floor(uiViewport.scrollTop / uiCell.height) - rowPadding.before) * uiCell.height;
     const headersHeight = R.sum(R.map(h => h.height, uiHeaders || []));
 
-    const marginTop = virtualization && uiViewport && uiCell ?
-        (Math.floor(uiViewport.scrollTop / uiCell.height) - rowPadding.before) * uiCell.height :
-        0;
-
-    const cell = {
-        marginTop: `${Math.max(marginTop - headersHeight, 0)}px`
-    };
-
-    const fragment = {
-        height: `${((uiCell && uiCell.height) || 1) * viewport.data.length}px`
-    };
+    const marginRight = scrollbarWidth;
+    const marginTop = virtualization && uiViewport && uiCell ? Math.max(virtualizedHeight - headersHeight, 0) : 0;
+    const height = Math.max(fullHeight - marginTop, 0);
 
     return [
-        [{}, { fragment: { marginRight: scrollbarWidth } }],
-        [{ cell }, { cell, fragment }]
+        [{}, { fragment: { marginRight } }],
+        [{ cell: { marginTop } }, { fragment: { height, marginTop } }]
     ];
 };

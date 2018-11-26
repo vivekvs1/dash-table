@@ -221,7 +221,7 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
             /*#if DEV*/
             const props: any = this.props;
             R.forEach(
-                key => props[key] === newProps[key] && Logger.fatal(`Updated prop ${key} wsas mutated`),
+                key => props[key] === newProps[key] && Logger.fatal(`Updated prop ${key} was mutated`),
                 R.keysIn(newProps)
             );
             /*#endif*/
@@ -238,7 +238,7 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
             /*#if DEV*/
             const props: any = this.state;
             R.forEach(
-                key => props[key] === (newProps as any)[key] && Logger.fatal(`Updated prop ${key} wsas mutated`),
+                key => props[key] === (newProps as any)[key] && Logger.fatal(`Updated prop ${key} was mutated`),
                 R.keysIn(newProps)
             );
             /*#endif*/
