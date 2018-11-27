@@ -76,11 +76,7 @@ function getVirtualizedState() {
             row_deletable: true,
             row_selectable: 'single',
             content_style: 'fit',
-            virtualization: true,
-            css: [{
-                selector: '.row-1',
-                rule: 'height: 600px; max-height: 600px; overflow: scroll;'
-            }]
+            virtualization: true
         })
     };
 }

@@ -657,18 +657,20 @@ export default class ControlledTable extends PureComponent<ControlledTableProps>
             virtualization
         } = this.props;
 
-        const classes = [
-            'dash-spreadsheet-inner',
+        const containerClasses = [
             'dash-spreadsheet',
+            'dash-spreadsheet-container',
+            ...(virtualized ? ['dash-virtualized'] : []),
             ...(n_fixed_rows ? ['dash-freeze-top'] : []),
             ...(n_fixed_columns ? ['dash-freeze-left'] : []),
             ...(style_as_list_view ? ['dash-list-view'] : []),
             [`dash-${content_style}`]
         ];
 
-        const containerClasses = [
+        const classes = [
             'dash-spreadsheet',
-            'dash-spreadsheet-container',
+            'dash-spreadsheet-inner',
+            ...(virtualized ? ['dash-virtualized'] : []),
             ...(n_fixed_rows ? ['dash-freeze-top'] : []),
             ...(n_fixed_columns ? ['dash-freeze-left'] : []),
             ...(style_as_list_view ? ['dash-list-view'] : []),
