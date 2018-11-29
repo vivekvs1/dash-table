@@ -36,8 +36,4 @@ export interface ICellDefaultProps {
     type: ColumnType;
 }
 
-export interface ICellState {
-    value: any;
-}
-
 export type ICellPropsWithDefaults = ICellProps & ICellDefaultProps;

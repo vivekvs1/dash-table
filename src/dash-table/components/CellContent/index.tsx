@@ -1,17 +1,14 @@
 import * as R from 'ramda';
 import React, {
-    PureComponent,
-    KeyboardEvent
+    PureComponent
 } from 'react';
 
 import DOM from 'core/browser/DOM';
-import { KEY_CODES, isNavKey } from 'dash-table/utils/unicode';
 
 import {
     ICellDefaultProps,
     ICellProps,
-    ICellPropsWithDefaults,
-    ICellState
+    ICellPropsWithDefaults
 } from 'dash-table/components/CellContent/props';
 
 import { ColumnType } from 'dash-table/components/Table/props';
@@ -20,7 +17,7 @@ import CellLabel from '../CellLabel';
 import CellInput from '../CellInput';
 import CellDropdown from '../CellDropdown';
 
-export default class CellContent extends PureComponent<ICellProps, ICellState> {
+export default class CellContent extends PureComponent<ICellProps> {
 
     public static defaultProps: ICellDefaultProps = {
         conditionalDropdowns: [],
@@ -29,10 +26,6 @@ export default class CellContent extends PureComponent<ICellProps, ICellState> {
 
     constructor(props: ICellProps) {
         super(props);
-
-        this.state = {
-            value: props.value
-        };
     }
 
     private get propsWithDefaults(): ICellPropsWithDefaults {
@@ -66,7 +59,9 @@ export default class CellContent extends PureComponent<ICellProps, ICellState> {
 
         return !dropdown || !editable ?
             (<CellLabel
-                props={attributes}
+                className={classes.join(' ')}
+                onClick={onClick}
+                onDoubleClick={onDoubleClick}
                 value={value}
             />) :
             (<CellDropdown
@@ -89,6 +84,7 @@ export default class CellContent extends PureComponent<ICellProps, ICellState> {
             active,
             editable,
             focused,
+            onChange,
             onClick,
             onDoubleClick,
             onMouseUp,
@@ -102,37 +98,25 @@ export default class CellContent extends PureComponent<ICellProps, ICellState> {
             ...['dash-cell-value']
         ];
 
-        const readonly = (!active && this.state.value === this.props.value) || !editable;
-
-        const attributes = {
-            className: classes.join(' '),
-            onClick: onClick,
-            onDoubleClick: onDoubleClick
-        };
-
-        return readonly ?
-            (<CellLabel
-                props={attributes}
-                value={value}
-            />) :
-            (<CellInput
-                ref='input'
-                props={R.merge({
-                    onBlur: this.propagateChange,
-                    onChange: this.handleChange,
-                    onKeyDown: this.handleKeyDown,
-                    onMouseUp,
-                    onPaste
-                }, attributes)}
-                value={this.state.value}
-            />);
+        return (<CellInput
+            ref='input'
+            active={active}
+            className={classes.join(' ')}
+            focused={focused}
+            onChange={onChange}
+            onClick={onClick}
+            onDoubleClick={onDoubleClick}
+            onMouseUp={onMouseUp}
+            onPaste={onPaste}
+            readonly={editable}
+            value={value}
+        />);
     }
 
-    private renderValue(props = {}, value?: string) {
-        value = value || this.propsWithDefaults.value;
+    private renderValue() {
+        const { value } = this.propsWithDefaults;
 
         return (<CellLabel
-            props={props}
             value={value}
         />);
     }
@@ -151,53 +135,27 @@ export default class CellContent extends PureComponent<ICellProps, ICellState> {
         }
     }
 
-    private propagateChange = () => {
-        if (this.state.value === this.props.value) {
-            return;
-        }
-
-        const { onChange } = this.props;
-
-        onChange(this.state.value);
-    }
-
-    private handleChange = (e: any) => {
-        this.setState({ value: e.target.value });
-    }
-
-    private handleKeyDown = (e: KeyboardEvent) => {
-        const is_focused = this.props.focused;
-
-        if (is_focused &&
-            (e.keyCode !== KEY_CODES.TAB && e.keyCode !== KEY_CODES.ENTER)
-        ) {
-            return;
-        }
-
-        if (!is_focused && !isNavKey(e.keyCode)) {
-            return;
-        }
-
-        this.propagateChange();
-    }
-
     handleOpenDropdown = () => {
-        const { dropdown, td }: { [key: string]: any } = this.refs;
-
         dropdownHelper(
-            dropdown.wrapper.querySelector('.Select-menu-outer'),
-            td
+            this.dropdown.wrapper.querySelector('.Select-menu-outer'),
+            this.td
         );
     }
 
-    componentWillReceiveProps(nextProps: ICellPropsWithDefaults) {
-        const { value: nextValue } = nextProps;
+    get dropdown(): any {
+        return this.refs.dropdown &&
+            (this.refs.dropdown as any).refs &&
+            (this.refs.dropdown as any).refs.dropdown;
+    }
 
-        if (this.state.value !== nextValue) {
-            this.setState({
-                value: nextValue
-            });
-        }
+    get input(): any {
+        return this.refs.input &&
+            (this.refs.input as any).refs &&
+            (this.refs.input as any).refs.input;
+    }
+
+    get td(): any {
+        return this.refs.td;
     }
 
     componentDidUpdate() {
@@ -206,8 +164,8 @@ export default class CellContent extends PureComponent<ICellProps, ICellState> {
             return;
         }
 
-        const input = this.refs.textInput as HTMLInputElement;
-        const dropdown = this.refs.dropdown as any;
+        const dropdown = this.dropdown;
+        const input = this.input;
 
         if (input && document.activeElement !== input) {
             input.focus();
@@ -216,7 +174,7 @@ export default class CellContent extends PureComponent<ICellProps, ICellState> {
 
         if (dropdown && document.activeElement !== dropdown) {
             // Limitation. If React >= 16 --> Use React.createRef instead to pass parent ref to child
-            const tdParent = DOM.getFirstParentOfType(dropdown.wrapper, 'td');
+            const tdParent = DOM.getFirstParentOfType(dropdown, 'td');
             if (tdParent) {
                 tdParent.focus();
             }

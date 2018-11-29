@@ -24,6 +24,7 @@ export default class CellDropdown extends PureComponent<IProps> {
                 {(dropdown.find(entry => entry.value === value) || { label: undefined }).label}
             </div>
             <Dropdown
+                ref='dropdown'
                 {...props}
                 options={dropdown}
                 value={value}
