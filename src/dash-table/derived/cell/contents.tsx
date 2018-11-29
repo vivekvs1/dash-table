@@ -11,7 +11,7 @@ import {
     VisibleColumns,
     ICellFactoryOptions
 } from 'dash-table/components/Table/props';
-import CellInput from 'dash-table/components/CellInput';
+import CellContent from 'dash-table/components/CellContent';
 import derivedCellEventHandlerProps from 'dash-table/derived/cell/eventHandlerProps';
 import isActiveCell from 'dash-table/derived/cell/isActive';
 import isEditable from './isEditable';
@@ -38,7 +38,7 @@ const getter = (
             const dropdown = dropdowns[rowIndex][columnIndex];
             const handlers = cellEventHandlerProps(propsFn)(rowIndex, columnIndex);
 
-            return (<CellInput
+            return (<CellContent
                 key={`column-${columnIndex}`}
                 active={active}
                 clearable={column.clearable}
