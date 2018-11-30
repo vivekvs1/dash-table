@@ -174,7 +174,7 @@ export default class CellContent extends PureComponent<ICellProps> {
 
         if (dropdown && document.activeElement !== dropdown) {
             // Limitation. If React >= 16 --> Use React.createRef instead to pass parent ref to child
-            const tdParent = DOM.getFirstParentOfType(dropdown, 'td');
+            const tdParent = DOM.getFirstParentOfType(dropdown.wrapper, 'td');
             if (tdParent) {
                 tdParent.focus();
             }
