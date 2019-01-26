@@ -2,30 +2,31 @@ import * as R from 'ramda';
 import { memoizeOne } from 'core/memoizer';
 
 type CacheKeyFragment = string | number | boolean;
+type CacheKey = CacheKeyFragment[];
 
-function memoize<TArgs extends any[], TEntry>(fn: (...args: TArgs) => TEntry) {
-    return memoizeOne((...args: TArgs) => fn(...args));
-}
+export default function memoizerCache<TKey extends CacheKey>() {
+    return <TEntryFn extends (...a: any[]) => any>(fn: TEntryFn) => {
+        const cache = new Map<CacheKeyFragment, any>();
 
-export default function memoizerCache<
-    TKey extends CacheKeyFragment[],
-    TArgs extends any[],
-    TEntry
-    >(fn: (...args: TArgs) => TEntry)
-{
-    const cache = new Map<CacheKeyFragment, any>();
+        function getCache(...key: TKey) {
+            const cacheKeys = key.slice(0, -1);
 
-    return (key: TKey, ...args: TArgs): TEntry => {
-        const lastKey = key.slice(-1)[0];
-        const cacheKeys = key.slice(0, -1);
+            return R.reduce((c, fragment) => {
+                return c.get(fragment) || c.set(fragment, new Map()).get(fragment);
+            }, cache, cacheKeys) as Map<CacheKeyFragment, any>;
+        }
 
-        const fnCacne = R.reduce((c, fragment) => {
-            return c.get(fragment) || c.set(fragment, new Map()).get(fragment);
-        }, cache, cacheKeys);
+        function get(...key: TKey) {
+            const lastKey = key.slice(-1)[0];
 
-        return (
-            fnCacne.get(lastKey) ||
-            fnCacne.set(lastKey, memoize<TArgs, TEntry>(fn)).get(lastKey)
-        )(...args);
+            const nestedCache = getCache(...key);
+
+            return (
+                nestedCache.get(lastKey) ||
+                nestedCache.set(lastKey, memoizeOne(fn)).get(lastKey)
+            ) as TEntryFn;
+        }
+
+        return { get };
     };
 }

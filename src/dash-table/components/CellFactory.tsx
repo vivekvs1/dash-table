@@ -23,7 +23,7 @@ export default class CellFactory {
         private readonly cellDropdowns = derivedDropdowns(),
         private readonly cellOperations = derivedCellOperations(),
         private readonly cellStyles = derivedCellStyles(),
-        private readonly cellWrappers = derivedCellWrappers(propsFn().id),
+        private readonly cellWrappers = derivedCellWrappers()(),
         private readonly relevantStyles = derivedRelevantCellStyles()
     ) { }
 

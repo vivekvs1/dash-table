@@ -19,31 +19,8 @@ import { IConditionalDropdown } from 'dash-table/components/CellDropdown/types';
 
 const mapData = R.addIndex<Datum, (DropdownValues | undefined)[]>(R.map);
 
-const getDropdown = (
-    astCache: (key: [ColumnId, number], query: string) => SyntaxTree,
-    conditionalDropdowns: IConditionalDropdown[],
-    datum: Datum,
-    property: ColumnId,
-    staticDropdown: DropdownValues | undefined
-): DropdownValues | undefined => {
-    const dropdowns = [
-        ...(staticDropdown ? [staticDropdown] : []),
-        ...R.map(
-            ([cd]) => cd.dropdown,
-            R.filter(
-                ([cd, i]) => astCache([property, i], cd.condition).evaluate(datum),
-                R.addIndex<IConditionalDropdown, [IConditionalDropdown, number]>(R.map)(
-                    (cd, i) => [cd, i],
-                    conditionalDropdowns
-                ))
-        )
-    ];
-
-    return dropdowns.length ? dropdowns.slice(-1)[0] : undefined;
-};
-
 const getter = (
-    astCache: (key: [ColumnId, number], query: string) => SyntaxTree,
+    cache: (k1: ColumnId, k2: number) => (q1: string, q2: Datum) => boolean,
     columns: VisibleColumns,
     data: Data,
     indices: Indices,
@@ -71,7 +48,20 @@ const getter = (
     const conditionalDropdowns = (conditional && conditional.dropdowns) || [];
     const staticDropdown = legacyDropdown || (base && base.dropdown);
 
-    return getDropdown(astCache, conditionalDropdowns, datum, column.id, staticDropdown);
+    const dropdowns = [
+        ...(staticDropdown ? [staticDropdown] : []),
+        ...R.map(
+            ([cd]) => cd.dropdown,
+            R.filter(
+                ([cd, i]) => cache(column.id, i)(cd.condition, datum),
+                R.addIndex<IConditionalDropdown, [IConditionalDropdown, number]>(R.map)(
+                    (cd, i) => [cd, i],
+                    conditionalDropdowns
+                ))
+        )
+    ];
+
+    return dropdowns.length ? dropdowns.slice(-1)[0] : undefined;
 }, columns), data);
 
 const getterFactory = memoizeOneFactory(getter);
@@ -84,11 +74,9 @@ const decoratedGetter = (_id: string): ((
     columnStaticDropdown: any,
     dropdown_properties: any
 ) => (DropdownValues | undefined)[][]) => {
-    const astCache = memoizerCache<[ColumnId, number], [string], SyntaxTree>(
-        (query: string) => new SyntaxTree(query)
-    );
+    const cache = memoizerCache<[ColumnId, number]>()((query: string, datum: Datum) => new SyntaxTree(query).evaluate(datum));
 
-    return getterFactory().bind(undefined, astCache);
+    return getterFactory().bind(undefined, cache.get);
 };
 
 export default memoizeOneFactory(decoratedGetter);
