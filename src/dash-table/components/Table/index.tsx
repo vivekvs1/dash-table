@@ -212,8 +212,8 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
         return this.__setState();
     }
 
-    private readonly __setProps = memoizeOne((setProps?: SetProps) => {
-        return setProps ? (newProps: any) => {
+    private readonly __setProps = memoizeOne((setProps: SetProps) => {
+        return (newProps: any) => {
             /*#if DEV*/
             const props: any = this.props;
             R.forEach(
@@ -230,16 +230,6 @@ export default class Table extends Component<PropsWithDefaultsAndDerived, Standa
             }
 
             setProps(newProps);
-        } : (newProps: Partial<PropsWithDefaultsAndDerived>) => {
-            /*#if DEV*/
-            const props: any = this.state;
-            R.forEach(
-                key => props[key] === (newProps as any)[key] && Logger.fatal(`Updated prop ${key} was mutated`),
-                R.keysIn(newProps)
-            );
-            /*#endif*/
-
-            this.setState(newProps);
         };
     });
 

@@ -278,7 +278,7 @@ interface IProps {
     row_selectable?: RowSelection;
     selected_cells?: SelectedCells;
     selected_rows?: Indices;
-    setProps?: SetProps;
+    setProps: SetProps;
     sorting?: Sorting;
     sorting_settings?: SortSettings;
     sorting_type?: SortingType;
