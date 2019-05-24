@@ -1,8 +1,8 @@
 
 const path = require('path');
-const packagejson = require('./../../package.json');
+const packageJson = require('./../../package.json');
 
-const dashLibraryName = packagejson.name.replace(/-/g, '_');
+const dashLibraryName = packageJson.name.replace(/-/g, '_');
 
 module.exports = (options = {}) => {
     const babel = options.babel || undefined;
@@ -18,12 +18,12 @@ module.exports = (options = {}) => {
 
     return {
         entry: {
-            bundle: './src/dash-table/index.ts',
+            dash_table: './src/dash-table/index.ts',
             demo: ['./demo/index.js', './demo/index.html']
         },
         mode: mode,
         output: {
-            path: path.resolve(__dirname, `./../../${dashLibraryName}`),
+            path: path.resolve(__dirname, '..', '..', 'dist', 'js'),
             filename: '[name].js',
             library: dashLibraryName,
             libraryTarget: 'umd'

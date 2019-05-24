@@ -3,9 +3,6 @@
 # dependencies
 /node_modules
 
-# production
-/build
-
 # testing
 /coverage
 /tests/cypress/screenshots/**
@@ -30,10 +27,10 @@ venv
 *.pyc
 
 # builds
-dash_table.egg-info
-lib
-dist
 *__pycache__*
 __pycache__/
 
 *.pyc
+dist/js/**
+dist/python/dist/**
+dist/python/dash_table.egg-info/**

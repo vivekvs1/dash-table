@@ -10,7 +10,7 @@
         }
     },
     "exclude": [
-        "dash_table/*",
+        "dist/python/dash_table/*",
         "dist/*",
         "node_modules/*",
         "storybook-static/*",
